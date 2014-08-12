@@ -1,0 +1,12 @@
+{
+  "name": "uzbl-node",
+  "description": "hello world test app",
+  "version": "0.0.1",
+  "private": true,
+  "main": "app.js",
+  "dependencies": {
+    "body-parser": "^1.6.3",
+    "express": "^3.16.5",
+    "shelljs": "^0.3.0"
+  }
+}

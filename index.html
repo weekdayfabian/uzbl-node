@@ -1,0 +1,21 @@
+<style>
+html { 
+  background: url(nyan.gif) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+</style>
+<script>
+xmlhttp=new XMLHttpRequest();
+xmlhttp.onreadystatechange=function()
+{
+  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+  {
+    document.body.innerHTML= '<pre>'+xmlhttp.responseText+'</pre>';
+  }
+}
+xmlhttp.open("GET","/ip",true);
+xmlhttp.send();
+</script>
