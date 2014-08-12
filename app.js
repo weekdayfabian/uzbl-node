@@ -5,11 +5,15 @@ var net = require('net');
 var shelljs = require('shelljs');
 app.use(express.urlencoded()); 
 
-SOCKET = "/tmp/uzbl_socket_5375";
 uri = "http://localhost:1337"
 
+function getuzblsocket() {
+    cmd = "netstat -ln | grep uzbl_socket | awk -F' ' '{print $9}'";
+    return shelljs.exec(cmd).output;   
+}
+
 function uzblwrite(cmd) {
-	var conn = net.createConnection(SOCKET);
+	var conn = net.createConnection(getuzblsocket());
 	conn.on('connect', function() {
 	    console.log('connected to unix socket server');
 	    conn.write(cmd+"\r\n");
