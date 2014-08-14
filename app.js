@@ -9,7 +9,11 @@ uri = "http://localhost:1337"
 
 function getuzblsocket() {
     cmd = "netstat -ln | grep uzbl_socket | awk -F' ' '{print $9}'";
-    return shelljs.exec(cmd).output;   
+    socket = shelljs.exec(cmd).output;
+    if(socket) {
+        return socket;
+    }
+    return false;
 }
 
 function uzblwrite(cmd) {
