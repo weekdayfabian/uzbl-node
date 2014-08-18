@@ -10,14 +10,14 @@ URIFILE="/mnt/pdp-main/uri"
 uri = getURI();
 
 function getURI() {
-  if(fs.existsSync(URIFILE) {
-    return JSON.parse(fs.readFileSync(URIFILE, {encoding: 'utf8'}));
+  if(fs.existsSync(URIFILE)) {
+    return fs.readFileSync(URIFILE, {encoding: 'utf8'});
   }
   return "http://localhost:1337";
 }
 
 function saveURI() {
-  return fs.writeFileSync(URIFILE, JSON.stringify(uri));
+  return fs.writeFileSync(URIFILE, uri);
 }
 
 function getuzblsocket() {
@@ -30,12 +30,21 @@ function getuzblsocket() {
 }
 
 function uzblwrite(cmd) {
-	var conn = net.createConnection(getuzblsocket());
-	conn.on('connect', function() {
-	    console.log('connected to unix socket server');
-	    conn.write(cmd+"\r\n");
-	    conn.end();
-	});
+  try {
+    var conn = net.createConnection(getuzblsocket());
+    if(conn){
+      conn.on('connect', function() {
+          console.log("connected: "+getuzblsocket());
+          conn.write(cmd+"\r\n");
+          conn.end();
+          return true;
+      });
+    }
+  }
+  catch(e) {
+    //return false;
+  }
+  return false;
 }
 
 app.get('/', function(req,res){
@@ -55,12 +64,18 @@ app.get('/uri', function(req,res){
 });
 
 app.post('/uri', function(req, res){
-  uzblwrite("uri "+req.body.uri);
-  uri = req.body.uri;
-  saveURI();
+  console.log(req.body.uri);
+  if(uzblwrite("uri "+req.body.uri)){
+    uri = req.body.uri;
+    saveURI();
+  }
   res.send(uri);
 });
 
 var server = app.listen(1337, function() {
     console.log('Listening on port %d', server.address().port);
 });
+
+process.on('uncaughtException', function (err) {
+      console.log(err);
+}); 

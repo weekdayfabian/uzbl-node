@@ -13,9 +13,14 @@ xmlhttp.onreadystatechange=function()
 {
   if (xmlhttp.readyState==4 && xmlhttp.status==200)
   {
-    document.body.innerHTML= '<pre>'+xmlhttp.responseText+'</pre>';
+    document.getElementById('ip').innerHTML = xmlhttp.responseText;
   }
 }
 xmlhttp.open("GET","/ip",true);
 xmlhttp.send();
 </script>
+<pre id="ip"></pre>
+<form action="/uri" method="POST">
+  <input name="uri" type="text" value="http://localhost:3000">
+  <input type="submit">
+</form>
