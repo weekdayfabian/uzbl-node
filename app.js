@@ -1,11 +1,24 @@
 var express = require('express');
 var app = express();
 
+var fs = require('fs');
 var net = require('net');
 var shelljs = require('shelljs');
 app.use(express.urlencoded()); 
 
-uri = "http://localhost:1337"
+URIFILE="/mnt/pdp-main/uri"
+uri = getURI();
+
+function getURI() {
+  if(fs.existsSync(URIFILE) {
+    return JSON.parse(fs.readFileSync(URIFILE, {encoding: 'utf8'}));
+  }
+  return "http://localhost:1337";
+}
+
+function saveURI() {
+  return fs.writeFileSync(URIFILE, JSON.stringify(uri));
+}
 
 function getuzblsocket() {
     cmd = "netstat -ln | grep uzbl_socket | awk -F' ' '{print $9}'";
@@ -44,6 +57,7 @@ app.get('/uri', function(req,res){
 app.post('/uri', function(req, res){
   uzblwrite("uri "+req.body.uri);
   uri = req.body.uri;
+  saveURI();
   res.send(uri);
 });
 
