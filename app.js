@@ -6,6 +6,8 @@ var net = require('net');
 var shelljs = require('shelljs');
 app.use(express.urlencoded()); 
 
+process.chdir(__dirname);
+
 URIFILE="/mnt/pdp-main/uri"
 uri = getURI();
 
@@ -22,7 +24,7 @@ function saveURI() {
 
 function getuzblsocket() {
     cmd = "netstat -ln | grep uzbl_socket | awk -F' ' '{print $9}'";
-    socket = shelljs.exec(cmd).output;
+    socket = shelljs.exec(cmd).output.trim();
     if(socket) {
         return socket;
     }
@@ -31,20 +33,20 @@ function getuzblsocket() {
 
 function uzblwrite(cmd) {
   try {
-    var conn = net.createConnection(getuzblsocket());
-    if(conn){
+    var s = getuzblsocket();
+    if(s){
+      var conn = net.createConnection(s);
       conn.on('connect', function() {
-          console.log("connected: "+getuzblsocket());
           conn.write(cmd+"\r\n");
           conn.end();
-          return true;
       });
     }
   }
   catch(e) {
+    return false;
     //return false;
   }
-  return false;
+  return true;
 }
 
 app.get('/', function(req,res){
@@ -64,7 +66,6 @@ app.get('/uri', function(req,res){
 });
 
 app.post('/uri', function(req, res){
-  console.log(req.body.uri);
   if(uzblwrite("uri "+req.body.uri)){
     uri = req.body.uri;
     saveURI();
